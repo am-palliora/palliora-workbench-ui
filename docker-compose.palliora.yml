@@ -1,0 +1,27 @@
+# Palliora integration overlay -- NOT part of upstream Open WebUI. Adds
+# nothing to the base docker-compose.yaml's services, just points the
+# existing `open-webui` service at palliora-adapter as a custom
+# OpenAI-compatible connection. See README.md's "Connecting to
+# palliora-adapter" section for full setup (getting PALLIORA_ADAPTER_TOKEN,
+# running palliora-adapter itself, etc.).
+#
+# palliora-adapter's own compose stack already binds host port 3000 (see
+# its infra/docker-compose.yml) -- the base docker-compose.yaml here
+# ALSO defaults to host port 3000 (`${OPEN_WEBUI_PORT-3000}`), so set
+# OPEN_WEBUI_PORT to something else when running both on the same host.
+# (Deliberately not overriding `ports:` in this file -- Compose file
+# merging APPENDS list fields like `ports` rather than replacing them,
+# confirmed via `docker compose config`, so a second ports: entry here
+# would bind BOTH 3000 and the new port, not remap it.)
+#
+# Usage:
+#   PALLIORA_ADAPTER_TOKEN=<token from issue-dev-token.ts> OPEN_WEBUI_PORT=8081 \
+#     docker compose -f docker-compose.yaml -f docker-compose.palliora.yml up -d
+services:
+  open-webui:
+    environment:
+      # host.docker.internal is already wired as an extra_host in the base
+      # docker-compose.yaml -- reuse it to reach palliora-adapter's own
+      # docker-compose stack running on the same host.
+      - 'OPENAI_API_BASE_URL=http://host.docker.internal:3000/v1'
+      - 'OPENAI_API_KEY=${PALLIORA_ADAPTER_TOKEN}'
