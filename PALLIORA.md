@@ -53,6 +53,15 @@ PALLIORA_ADAPTER_TOKEN=<token from step 2> OPEN_WEBUI_PORT=8081 \
 `OPEN_WEBUI_PORT=8081` avoids a collision with `palliora-adapter`'s own
 compose stack, which already binds host port 3000.
 
+**Changing the token later?** Open WebUI persists its admin/connection
+config in its own SQLite volume (`open-webui:/app/backend/data`).
+Restarting the container with a new `PALLIORA_ADAPTER_TOKEN` does
+**not** override an already-provisioned connection from a prior run --
+either update it via Settings → Admin → Connections in the UI, or wipe
+the volume (`docker compose -f docker-compose.yaml -f
+docker-compose.palliora.yml down -v`) for a truly fresh start that
+picks up the new env var.
+
 Open `http://localhost:8081`. The model dropdown should list the 4
 models `palliora-adapter` currently supports (`gemma3:1b`,
 `deepseek-r1:1.5b`, `llama3.2:1b`, `qwen3:0.6b`) — anything else will
