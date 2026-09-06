@@ -25,3 +25,8 @@ services:
       # docker-compose stack running on the same host.
       - 'OPENAI_API_BASE_URL=http://host.docker.internal:3000/v1'
       - 'OPENAI_API_KEY=${PALLIORA_ADAPTER_TOKEN}'
+      # TEMPORARY (remove after use): re-enables sign-up so a new admin
+      # account can be created after losing access to the existing one.
+      # Revert this line once done -- see the removal step this was added
+      # alongside.
+      - 'ENABLE_SIGNUP=true'
