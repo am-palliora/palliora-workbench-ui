@@ -1,0 +1,26 @@
+# Palliora-adapter-quick overlay -- NOT part of upstream Open WebUI. Points
+# the open-webui service at palliora-adapter-quick (the throwaway
+# OpenAI-relay-plus-trace sample, see am-palliora/palliora-adapter-quick)
+# instead of the full palliora-adapter. Same shape as docker-compose.palliora.yml
+# (see PALLIORA.md for that one) -- kept as a separate file/project so both
+# can run side by side without colliding.
+#
+# palliora-adapter-quick isn't containerized -- run it on the host first:
+#   cd path/to/palliora-adapter-quick/server && npm run dev
+#   curl http://localhost:8080/health   # expect {"ok":true}
+#
+# Then bring up this stack with an isolated compose project name (own
+# containers/volumes/network, won't touch an existing palliora-adapter-pointed
+# instance) and a distinct host port:
+#
+#   OPEN_WEBUI_PORT=8082 docker compose -p palliora-quick \
+#     -f docker-compose.yaml -f docker-compose.palliora-quick.yml up -d
+#
+# No real auth on palliora-adapter-quick's side -- it never checks the
+# Authorization header -- so OPENAI_API_KEY here can be any non-empty string;
+# Open WebUI just needs something set to treat the connection as configured.
+services:
+  open-webui:
+    environment:
+      - 'OPENAI_API_BASE_URL=http://host.docker.internal:8080/v1'
+      - 'OPENAI_API_KEY=unused-palliora-adapter-quick-has-no-auth'
