@@ -19,8 +19,15 @@
 # No real auth on palliora-adapter-quick's side -- it never checks the
 # Authorization header -- so OPENAI_API_KEY here can be any non-empty string;
 # Open WebUI just needs something set to treat the connection as configured.
+#
+# WEBUI_NAME rebrands the app (title, PWA manifest, notifications, etc.) --
+# but backend/open_webui/env.py unconditionally appends " (Open WebUI)" to
+# any non-default value, so the displayed name ends up "Palliora AI
+# Workbench (Open WebUI)", not the exact string below. Not patched away to
+# keep this an unmodified fork (see PALLIORA.md) -- fine for a quick rebrand.
 services:
   open-webui:
     environment:
       - 'OPENAI_API_BASE_URL=http://host.docker.internal:8080/v1'
       - 'OPENAI_API_KEY=unused-palliora-adapter-quick-has-no-auth'
+      - 'WEBUI_NAME=Palliora AI Workbench'
